@@ -10,6 +10,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
+library(tidymodels)
 ```
 
 
@@ -86,9 +87,29 @@ Consider the numerical values `educ` and `emailhr` from your new data set `gss16
 
 a) Fit a linear regression model to predicting `emailhr` based on the `educ`. From your output, state the formula for the line-of-best fit and give an interpretation of the `emailhr` estimate.
 
+emailhr = 0.69*educ-2.76
+Higher the education level, the more time spent emails.
+
 b) Comment on the overall performance of the linear regression model. Support your statements with an appropriate data visualisation and model fit statistics.
 
+A rend can be seen in the plot of the residuals of a line with a negative gradient. This shows that a different might give a better performance.
+
 ```{r}
+emailhr_educ_model <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(emailhr ~ educ, data = gss16_advfront)
+  tidy(emailhr_educ_model)
+
+#emailhr = 0.69*educ-2.76
+#Higher the education level, the more time spent emails.
+
+
+emailhr_educ_model_aug <- augment(emailhr_educ_model$fit)
+
+ggplot(emailhr_educ_model_aug, mapping = aes(x = .fitted, y = .resid)) +
+geom_jitter(alpha = 0.5) +
+  geom_hline(yintercept = 0, color = 'gray', lty = 'dashed') +
+  labs(x = 'Predicted' , y = 'Residuals')
 
 ```
 
@@ -118,6 +139,7 @@ The recipe (named `gss16_rec_1`) should contain the following steps for predicti
   - The model (named `gss16_mod_1`) should specify a model that is appropriate for the data as well as the computational engine.
 
 ```{r}
+gss_wflow_1
 
 ```
 
